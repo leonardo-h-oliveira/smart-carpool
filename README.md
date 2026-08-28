@@ -78,9 +78,10 @@ Contas de demonstração:
 pytest
 ```
 
-Os dez testes cobrem autenticação, conexão com o banco, isolamento dos veículos
-de cada usuário, solicitação e aceite, autorizações, cancelamentos, controle de
-vagas e privacidade dos dados de contato.
+Os onze testes cobrem autenticação, conexão com o banco, entrega atualizada da
+interface, isolamento dos veículos de cada usuário, solicitação e aceite,
+autorizações, cancelamentos, controle de vagas e privacidade dos dados de
+contato.
 
 ## Configuração para publicação
 

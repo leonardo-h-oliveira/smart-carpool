@@ -78,6 +78,15 @@ def test_health_check_confirms_database_connection():
     assert response.json() == {"status": "ok", "database": "sqlite"}
 
 
+def test_index_prevents_stale_visual_assets():
+    response = client.get("/")
+
+    assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store, max-age=0"
+    assert '/static/styles.css?v=' in response.text
+    assert '/static/app.js?v=' in response.text
+
+
 def test_private_routes_require_authentication():
     assert client.get("/api/dashboard").status_code == 401
     assert client.get("/api/vehicles").status_code == 401
