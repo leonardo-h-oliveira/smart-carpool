@@ -90,6 +90,49 @@ def test_index_prevents_stale_visual_assets():
 def test_private_routes_require_authentication():
     assert client.get("/api/dashboard").status_code == 401
     assert client.get("/api/vehicles").status_code == 401
+    assert client.patch(
+        "/api/me",
+        json={"name": "Novo Nome", "university": "UNIFAL-MG", "phone": None},
+    ).status_code == 401
+
+
+def test_user_can_update_profile_without_changing_login_email():
+    user_headers = register("profile@test.com")
+
+    updated = client.patch(
+        "/api/me",
+        headers=user_headers,
+        json={
+            "name": "  Maria   da Silva  ",
+            "university": " Universidade Federal de Alfenas ",
+            "phone": "(35) 99999-1234",
+        },
+    )
+
+    assert updated.status_code == 200
+    assert updated.json() == {
+        "id": 1,
+        "name": "Maria da Silva",
+        "email": "profile@test.com",
+        "university": "Universidade Federal de Alfenas",
+        "phone": "35999991234",
+    }
+    assert client.get("/api/me", headers=user_headers).json() == updated.json()
+
+
+def test_profile_rejects_invalid_phone_without_losing_current_data():
+    user_headers = register("invalid-phone@test.com")
+
+    response = client.patch(
+        "/api/me",
+        headers=user_headers,
+        json={"name": "Outro Nome", "university": "UNIFAL-MG", "phone": "123"},
+    )
+
+    assert response.status_code == 422
+    profile = client.get("/api/me", headers=user_headers).json()
+    assert profile["name"] == "Test User"
+    assert profile["phone"] is None
 
 
 def test_users_only_list_their_own_vehicles():

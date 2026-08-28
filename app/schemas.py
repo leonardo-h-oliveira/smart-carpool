@@ -1,7 +1,8 @@
+import re
 from datetime import date, time
 from typing import Literal
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 
 class RegisterIn(BaseModel):
@@ -15,6 +16,30 @@ class RegisterIn(BaseModel):
 class LoginIn(BaseModel):
     email: EmailStr
     password: str
+
+
+class ProfileUpdateIn(BaseModel):
+    name: str = Field(min_length=2, max_length=100)
+    university: str = Field(min_length=2, max_length=120)
+    phone: str | None = Field(default=None, max_length=30)
+
+    @field_validator("name", "university")
+    @classmethod
+    def normalize_required_text(cls, value: str) -> str:
+        normalized = " ".join(value.split())
+        if len(normalized) < 2:
+            raise ValueError("Informe pelo menos 2 caracteres")
+        return normalized
+
+    @field_validator("phone")
+    @classmethod
+    def normalize_phone(cls, value: str | None) -> str | None:
+        if not value or not value.strip():
+            return None
+        digits = re.sub(r"\D", "", value)
+        if not 10 <= len(digits) <= 15:
+            raise ValueError("Informe um telefone válido com DDD")
+        return digits
 
 
 class VehicleIn(BaseModel):

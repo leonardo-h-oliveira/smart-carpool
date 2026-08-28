@@ -74,6 +74,26 @@ def me(user: models.User = Depends(current_user)):
     return {"id": user.id, "name": user.name, "email": user.email, "university": user.university, "phone": user.phone}
 
 
+@app.patch("/api/me")
+def update_me(
+    data: schemas.ProfileUpdateIn,
+    user: models.User = Depends(current_user),
+    db: Session = Depends(get_db),
+):
+    user.name = data.name
+    user.university = data.university
+    user.phone = data.phone
+    db.commit()
+    db.refresh(user)
+    return {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email,
+        "university": user.university,
+        "phone": user.phone,
+    }
+
+
 @app.post("/api/vehicles", status_code=201)
 def add_vehicle(data: schemas.VehicleIn, user: models.User = Depends(current_user), db: Session = Depends(get_db)):
     vehicle = models.Vehicle(owner_id=user.id, model=data.model, color=data.color, plate=data.plate.upper().replace("-", ""))

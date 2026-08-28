@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Smart Carpool</title><link rel="stylesheet" href="/static/styles.css?v=20260828.2">
+  <title>Smart Carpool</title><link rel="stylesheet" href="/static/styles.css?v=20260828.3">
 </head>
 <body>
   <div class="shell">
@@ -31,8 +31,8 @@
       <section id="offer" class="view hidden"><div class="section-head"><div><span class="eyebrow">PUBLIQUE SEU TRAJETO</span><h2>Oferecer carona</h2></div></div><form id="ride-form" class="card form-grid"><label class="full">Veículo<select name="vehicle_id" id="vehicle-select" required></select></label><div id="offer-vehicle-list" class="vehicle-picker full" aria-label="Seus veículos"></div><label>Origem<input name="origin" required></label><label>Destino<input name="destination" required></label><label>Data<input name="ride_date" type="date" required></label><label>Horário<input name="ride_time" type="time" required></label><label>Vagas<input name="seats" type="number" min="1" max="7" value="3" required></label><label class="full">Observações<textarea name="notes" placeholder="Ponto de encontro, bagagem..."></textarea></label><button id="publish-ride" class="primary full">Publicar carona</button></form></section>
       <section id="trips" class="view hidden"><div class="section-head"><div><span class="eyebrow">ACOMPANHE TUDO</span><h2>Minhas viagens</h2></div></div><div id="dashboard"></div></section>
       <section id="vehicle" class="view hidden"><div class="section-head"><div><span class="eyebrow">DADOS DO MOTORISTA</span><h2>Meus veículos</h2><p>Cadastre os veículos que você pode usar para oferecer caronas.</p></div></div><form id="vehicle-form" class="card form-grid"><label>Modelo<input name="model" required placeholder="Ex.: Honda Civic"></label><label>Cor<input name="color" required></label><label>Placa<input name="plate" required maxlength="8"></label><button class="primary full">Salvar veículo</button></form><h3 class="vehicle-list-title">Veículos cadastrados</h3><div id="vehicles" class="cards"></div></section>
-      <section id="profile" class="view hidden"><div class="section-head"><div><span class="eyebrow">SUA CONTA</span><h2>Perfil</h2></div></div><div id="profile-card" class="card"></div></section>
+      <section id="profile" class="view hidden"><div class="section-head"><div><span class="eyebrow">SUA CONTA</span><h2>Editar perfil</h2><p>Mantenha seus dados atualizados para facilitar o contato nas caronas confirmadas.</p></div></div><form id="profile-form" class="card form-grid profile-form"><label>Nome completo<input name="name" autocomplete="name" minlength="2" maxlength="100" required></label><label>E-mail<input name="email" type="email" readonly aria-describedby="email-help"><small id="email-help" class="field-help">O e-mail de acesso não pode ser alterado.</small></label><label>Universidade<input name="university" maxlength="120" required></label><label>Telefone<input name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="Ex.: (35) 99999-9999"><small class="field-help">O contato só aparece após uma solicitação ser aceita.</small></label><button id="save-profile" class="primary full">Salvar alterações</button></form></section>
     </main>
-  </div><script src="/static/app.js?v=20260828.2"></script>
+  </div><script src="/static/app.js?v=20260828.3"></script>
 </body></html>
 

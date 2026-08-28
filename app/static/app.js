@@ -29,6 +29,17 @@ const esc = (value) =>
       ],
   );
 
+function formatPhone(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (digits.length === 11) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  }
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  }
+  return value || "";
+}
+
 function clearSession() {
   token = null;
   user = null;
@@ -60,7 +71,9 @@ function authMessage(message = "Entre ou crie uma conta para continuar.") {
 
 function apiErrorMessage(detail) {
   if (Array.isArray(detail)) {
-    return detail.map((item) => item.msg).join(" ");
+    return detail
+      .map((item) => String(item.msg).replace(/^Value error,\s*/, ""))
+      .join(" ");
   }
   return detail || "Não foi possível concluir a operação.";
 }
@@ -117,7 +130,7 @@ function show(view) {
 
 function renderRide(ride, { canBook = false, actions = "" } = {}) {
   const contact = ride.driver.phone
-    ? `<div class="contact"><strong>Contato liberado</strong><br><span>${esc(ride.driver.phone)} · ${esc(ride.vehicle.plate)}</span></div>`
+    ? `<div class="contact"><strong>Contato liberado</strong><br><span>${esc(formatPhone(ride.driver.phone))} · ${esc(ride.vehicle.plate)}</span></div>`
     : "";
   const bookAction = canBook
     ? `<button class="primary compact" onclick="book(${ride.id})">Solicitar vaga</button>`
@@ -292,11 +305,11 @@ async function loadDashboard() {
 async function loadProfile() {
   try {
     const profile = await api("/me");
-    $("#profile-card").innerHTML = `
-      <div class="profile-row"><span>Nome</span><strong>${esc(profile.name)}</strong></div>
-      <div class="profile-row"><span>E-mail</span><strong>${esc(profile.email)}</strong></div>
-      <div class="profile-row"><span>Universidade</span><strong>${esc(profile.university)}</strong></div>
-      <div class="profile-row"><span>Telefone</span><strong>${esc(profile.phone || "Não informado")}</strong></div>`;
+    const form = $("#profile-form");
+    form.elements.name.value = profile.name;
+    form.elements.email.value = profile.email;
+    form.elements.university.value = profile.university;
+    form.elements.phone.value = formatPhone(profile.phone);
   } catch (error) {
     notice(error.message, true);
   }
@@ -382,6 +395,32 @@ $("#register-form").onsubmit = async (event) => {
     loginDone(await api("/auth/register", { method: "POST", body: JSON.stringify(data) }));
   } catch (error) {
     notice(error.message, true);
+  }
+};
+
+$("#profile-form").onsubmit = async (event) => {
+  event.preventDefault();
+  const button = $("#save-profile");
+  const data = Object.fromEntries(new FormData(event.target));
+  delete data.email;
+  data.phone = data.phone.trim() || null;
+  button.disabled = true;
+  button.textContent = "Salvando...";
+  try {
+    const profile = await api("/me", {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+    user = { ...user, name: profile.name, email: profile.email };
+    localStorage.setItem("sc_user", JSON.stringify(user));
+    $("#avatar").textContent = profile.name[0].toUpperCase();
+    event.target.elements.phone.value = formatPhone(profile.phone);
+    notice("Dados cadastrais atualizados.");
+  } catch (error) {
+    notice(error.message, true);
+  } finally {
+    button.disabled = false;
+    button.textContent = "Salvar alterações";
   }
 };
 

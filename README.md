@@ -11,6 +11,7 @@ Estudantes que percorrem trajetos semelhantes nem sempre conseguem encontrar car
 ## O que o MVP entrega
 
 - Cadastro e autenticação de usuários
+- Consulta e alteração dos dados cadastrais
 - Cadastro e seleção dos veículos de cada motorista
 - Publicação e busca de caronas
 - Solicitação de vaga pelo passageiro
@@ -78,10 +79,10 @@ Contas de demonstração:
 pytest
 ```
 
-Os onze testes cobrem autenticação, conexão com o banco, entrega atualizada da
-interface, isolamento dos veículos de cada usuário, solicitação e aceite,
-autorizações, cancelamentos, controle de vagas e privacidade dos dados de
-contato.
+Os treze testes cobrem autenticação, atualização de perfil, validações, conexão
+com o banco, entrega atualizada da interface, isolamento dos veículos de cada
+usuário, solicitação e aceite, autorizações, cancelamentos, controle de vagas e
+privacidade dos dados de contato.
 
 ## Configuração para publicação
 
