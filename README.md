@@ -12,7 +12,7 @@ Estudantes que percorrem trajetos semelhantes nem sempre conseguem encontrar car
 
 - Cadastro e autenticação de usuários
 - Consulta e alteração dos dados cadastrais
-- Cadastro e seleção dos veículos de cada motorista
+- Cadastro, seleção, edição e exclusão segura dos veículos de cada motorista
 - Publicação e busca de caronas
 - Solicitação de vaga pelo passageiro
 - Aceite ou recusa pelo motorista
@@ -79,10 +79,10 @@ Contas de demonstração:
 pytest
 ```
 
-Os treze testes cobrem autenticação, atualização de perfil, validações, conexão
-com o banco, entrega atualizada da interface, isolamento dos veículos de cada
-usuário, solicitação e aceite, autorizações, cancelamentos, controle de vagas e
-privacidade dos dados de contato.
+Os dezoito testes cobrem autenticação, atualização de perfil, validações,
+gerenciamento e isolamento dos veículos, conexão com o banco, entrega atualizada
+da interface, solicitação e aceite, autorizações, cancelamentos, controle de
+vagas e privacidade dos dados de contato.
 
 ## Configuração para publicação
 

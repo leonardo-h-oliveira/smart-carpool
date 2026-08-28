@@ -5,6 +5,8 @@ let token = localStorage.getItem("sc_token");
 let user = null;
 let returnToOfferAfterVehicle = false;
 let pendingVehicleId = null;
+let ownedVehicles = [];
+let editingVehicleId = null;
 
 try {
   user = JSON.parse(localStorage.getItem("sc_user") || "null");
@@ -183,20 +185,70 @@ function selectVehicle(vehicleId) {
 }
 
 function startVehicleRegistration() {
+  resetVehicleForm();
   returnToOfferAfterVehicle = true;
   show("vehicle");
   notice("Cadastre o veículo. Depois você voltará para concluir a carona.");
   $("#vehicle-form input[name='model']").focus();
 }
 
+function resetVehicleForm() {
+  editingVehicleId = null;
+  $("#vehicle-form").reset();
+  $("#vehicle-form-title").textContent = "Cadastrar novo veículo";
+  $("#vehicle-form-description").textContent =
+    "Informe os dados do veículo que você dirige.";
+  $("#save-vehicle").textContent = "Salvar veículo";
+  $("#cancel-vehicle-edit").classList.add("hidden");
+}
+
+function editVehicle(vehicleId) {
+  const vehicle = ownedVehicles.find((item) => item.id === vehicleId);
+  if (!vehicle) return;
+  editingVehicleId = vehicle.id;
+  const form = $("#vehicle-form");
+  form.elements.model.value = vehicle.model;
+  form.elements.color.value = vehicle.color;
+  form.elements.plate.value = vehicle.plate;
+  $("#vehicle-form-title").textContent = `Editar ${vehicle.model}`;
+  $("#vehicle-form-description").textContent =
+    "Corrija os dados e salve para atualizar todas as telas.";
+  $("#save-vehicle").textContent = "Salvar alterações";
+  $("#cancel-vehicle-edit").classList.remove("hidden");
+  form.scrollIntoView({ behavior: "smooth", block: "start" });
+  form.elements.model.focus();
+}
+
+async function removeVehicle(vehicleId) {
+  const vehicle = ownedVehicles.find((item) => item.id === vehicleId);
+  if (!vehicle) return;
+  if (!window.confirm(`Excluir ${vehicle.model} · ${vehicle.plate}?`)) return;
+  try {
+    await api(`/vehicles/${vehicle.id}`, { method: "DELETE" });
+    if (editingVehicleId === vehicle.id) resetVehicleForm();
+    notice("Veículo excluído.");
+    loadVehicles();
+  } catch (error) {
+    notice(error.message, true);
+  }
+}
+
 async function loadVehicles() {
   try {
     const vehicles = await api("/vehicles");
+    ownedVehicles = vehicles;
     $("#vehicles").innerHTML =
       vehicles
         .map(
-          (vehicle) =>
-            `<article class="ride"><h4>${esc(vehicle.model)}</h4><p>${esc(vehicle.color)} · ${esc(vehicle.plate)}</p></article>`,
+          (vehicle) => `<article class="ride vehicle-card">
+            <div class="vehicle-card-heading"><div><h4>${esc(vehicle.model)}</h4><p>${esc(vehicle.color)} · ${esc(vehicle.plate)}</p></div><span class="badge">${vehicle.can_delete ? "Disponível" : "Em uso"}</span></div>
+            <div class="vehicle-card-actions">
+              <button type="button" class="secondary compact" onclick="editVehicle(${vehicle.id})">Editar</button>
+              ${vehicle.can_delete
+                ? `<button type="button" class="danger compact" onclick="removeVehicle(${vehicle.id})">Excluir</button>`
+                : '<button type="button" class="danger compact" disabled title="Há uma carona vinculada a este veículo">Vinculado a carona</button>'}
+            </div>
+          </article>`,
         )
         .join("") || '<div class="empty">Cadastre um veículo para oferecer caronas.</div>';
     const select = $("#vehicle-select");
@@ -426,26 +478,40 @@ $("#profile-form").onsubmit = async (event) => {
 
 $("#vehicle-form").onsubmit = async (event) => {
   event.preventDefault();
+  const button = $("#save-vehicle");
+  const vehicleId = editingVehicleId;
+  const wasEditing = vehicleId !== null;
+  button.disabled = true;
+  button.textContent = "Salvando...";
   try {
     const data = Object.fromEntries(new FormData(event.target));
-    const vehicle = await api("/vehicles", {
-      method: "POST",
+    const vehicle = await api(wasEditing ? `/vehicles/${vehicleId}` : "/vehicles", {
+      method: wasEditing ? "PATCH" : "POST",
       body: JSON.stringify(data),
     });
-    event.target.reset();
+    resetVehicleForm();
     if (returnToOfferAfterVehicle) {
       returnToOfferAfterVehicle = false;
       pendingVehicleId = vehicle.id;
       show("offer");
-      notice("Veículo cadastrado e selecionado. Agora conclua a carona.");
+      notice(
+        wasEditing
+          ? "Veículo atualizado e selecionado. Agora conclua a carona."
+          : "Veículo cadastrado e selecionado. Agora conclua a carona.",
+      );
     } else {
-      notice("Veículo cadastrado.");
+      notice(wasEditing ? "Veículo atualizado." : "Veículo cadastrado.");
       loadVehicles();
     }
   } catch (error) {
     notice(error.message, true);
+  } finally {
+    button.disabled = false;
+    button.textContent = editingVehicleId === null ? "Salvar veículo" : "Salvar alterações";
   }
 };
+
+$("#cancel-vehicle-edit").onclick = resetVehicleForm;
 
 $("#ride-form").onsubmit = async (event) => {
   event.preventDefault();
@@ -487,6 +553,7 @@ $("#show-login").onclick = () => {
 $$('[data-view]').forEach((button) => {
   button.onclick = () => {
     returnToOfferAfterVehicle = false;
+    if (button.dataset.view === "vehicle") resetVehicleForm();
     show(button.dataset.view);
   };
 });

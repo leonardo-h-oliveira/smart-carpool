@@ -43,9 +43,25 @@ class ProfileUpdateIn(BaseModel):
 
 
 class VehicleIn(BaseModel):
-    model: str
-    color: str
-    plate: str
+    model: str = Field(min_length=2, max_length=80)
+    color: str = Field(min_length=2, max_length=40)
+    plate: str = Field(min_length=7, max_length=8)
+
+    @field_validator("model", "color")
+    @classmethod
+    def normalize_vehicle_text(cls, value: str) -> str:
+        normalized = " ".join(value.split())
+        if len(normalized) < 2:
+            raise ValueError("Informe pelo menos 2 caracteres")
+        return normalized
+
+    @field_validator("plate")
+    @classmethod
+    def normalize_plate(cls, value: str) -> str:
+        normalized = re.sub(r"[^A-Za-z0-9]", "", value).upper()
+        if len(normalized) != 7:
+            raise ValueError("Informe uma placa válida com 7 caracteres")
+        return normalized
 
 
 class RideIn(BaseModel):

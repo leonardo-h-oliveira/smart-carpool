@@ -2,7 +2,7 @@ from datetime import date
 from pathlib import Path
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import func, select, text
 from sqlalchemy.exc import IntegrityError
@@ -96,7 +96,7 @@ def update_me(
 
 @app.post("/api/vehicles", status_code=201)
 def add_vehicle(data: schemas.VehicleIn, user: models.User = Depends(current_user), db: Session = Depends(get_db)):
-    vehicle = models.Vehicle(owner_id=user.id, model=data.model, color=data.color, plate=data.plate.upper().replace("-", ""))
+    vehicle = models.Vehicle(owner_id=user.id, model=data.model, color=data.color, plate=data.plate)
     db.add(vehicle)
     try:
         db.commit()
@@ -109,7 +109,91 @@ def add_vehicle(data: schemas.VehicleIn, user: models.User = Depends(current_use
 
 @app.get("/api/vehicles")
 def vehicles(user: models.User = Depends(current_user), db: Session = Depends(get_db)):
-    return db.execute(select(models.Vehicle).where(models.Vehicle.owner_id == user.id)).scalars().all()
+    user_vehicles = db.execute(
+        select(models.Vehicle).where(models.Vehicle.owner_id == user.id)
+    ).scalars().all()
+    used_vehicle_ids = (
+        set(
+            db.execute(
+                select(models.Ride.vehicle_id).where(
+                    models.Ride.vehicle_id.in_(
+                        [vehicle.id for vehicle in user_vehicles]
+                    )
+                )
+            ).scalars()
+        )
+        if user_vehicles
+        else set()
+    )
+    return [
+        {
+            "id": vehicle.id,
+            "model": vehicle.model,
+            "color": vehicle.color,
+            "plate": vehicle.plate,
+            "can_delete": vehicle.id not in used_vehicle_ids,
+        }
+        for vehicle in user_vehicles
+    ]
+
+
+def owned_vehicle(vehicle_id: int, user: models.User, db: Session) -> models.Vehicle:
+    vehicle = db.get(models.Vehicle, vehicle_id)
+    if not vehicle or vehicle.owner_id != user.id:
+        raise HTTPException(404, "Veículo não encontrado")
+    return vehicle
+
+
+@app.patch("/api/vehicles/{vehicle_id}")
+def update_vehicle(
+    vehicle_id: int,
+    data: schemas.VehicleIn,
+    user: models.User = Depends(current_user),
+    db: Session = Depends(get_db),
+):
+    vehicle = owned_vehicle(vehicle_id, user, db)
+    vehicle.model = data.model
+    vehicle.color = data.color
+    vehicle.plate = data.plate
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(409, "Esta placa já está cadastrada")
+    db.refresh(vehicle)
+    return {
+        "id": vehicle.id,
+        "model": vehicle.model,
+        "color": vehicle.color,
+        "plate": vehicle.plate,
+    }
+
+
+@app.delete("/api/vehicles/{vehicle_id}", status_code=204)
+def delete_vehicle(
+    vehicle_id: int,
+    user: models.User = Depends(current_user),
+    db: Session = Depends(get_db),
+):
+    vehicle = owned_vehicle(vehicle_id, user, db)
+    linked_ride = db.scalar(
+        select(models.Ride.id).where(models.Ride.vehicle_id == vehicle.id).limit(1)
+    )
+    if linked_ride is not None:
+        raise HTTPException(
+            409,
+            "Este veículo está vinculado a uma carona e não pode ser excluído",
+        )
+    db.delete(vehicle)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            409,
+            "Este veículo está vinculado a uma carona e não pode ser excluído",
+        )
+    return Response(status_code=204)
 
 
 @app.post("/api/rides", status_code=201)

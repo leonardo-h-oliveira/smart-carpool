@@ -155,6 +155,110 @@ def test_users_only_list_their_own_vehicles():
     assert [vehicle["plate"] for vehicle in first_user_vehicles.json()] == ["ABC1D23"]
 
 
+def test_owner_can_update_vehicle_and_normalize_its_data():
+    owner = register("vehicle-owner@test.com")
+    vehicle = client.post(
+        "/api/vehicles",
+        headers=owner,
+        json={"model": "Gol", "color": "Prata", "plate": "ABC1D23"},
+    ).json()
+
+    updated = client.patch(
+        f'/api/vehicles/{vehicle["id"]}',
+        headers=owner,
+        json={"model": "  Fiat   Argo ", "color": " Azul ", "plate": "def-4g56"},
+    )
+
+    assert updated.status_code == 200
+    assert updated.json()["model"] == "Fiat Argo"
+    assert updated.json()["color"] == "Azul"
+    assert updated.json()["plate"] == "DEF4G56"
+
+
+def test_vehicle_update_rejects_a_plate_that_already_exists():
+    owner = register("duplicate-plate@test.com")
+    client.post(
+        "/api/vehicles",
+        headers=owner,
+        json={"model": "Gol", "color": "Prata", "plate": "ABC1D23"},
+    )
+    second_vehicle = client.post(
+        "/api/vehicles",
+        headers=owner,
+        json={"model": "Onix", "color": "Preto", "plate": "DEF4G56"},
+    ).json()
+
+    response = client.patch(
+        f'/api/vehicles/{second_vehicle["id"]}',
+        headers=owner,
+        json={"model": "Onix", "color": "Preto", "plate": "ABC1D23"},
+    )
+
+    assert response.status_code == 409
+    vehicles = client.get("/api/vehicles", headers=owner).json()
+    assert {vehicle["plate"] for vehicle in vehicles} == {"ABC1D23", "DEF4G56"}
+
+
+def test_user_cannot_change_or_delete_another_users_vehicle():
+    owner = register("vehicle-owner@test.com")
+    another_user = register("another-user@test.com")
+    vehicle = client.post(
+        "/api/vehicles",
+        headers=owner,
+        json={"model": "Gol", "color": "Prata", "plate": "ABC1D23"},
+    ).json()
+
+    update = client.patch(
+        f'/api/vehicles/{vehicle["id"]}',
+        headers=another_user,
+        json={"model": "Onix", "color": "Preto", "plate": "DEF4G56"},
+    )
+    deletion = client.delete(f'/api/vehicles/{vehicle["id"]}', headers=another_user)
+
+    assert update.status_code == 404
+    assert deletion.status_code == 404
+
+
+def test_vehicle_without_rides_can_be_deleted():
+    owner = register("delete-vehicle@test.com")
+    vehicle = client.post(
+        "/api/vehicles",
+        headers=owner,
+        json={"model": "Gol", "color": "Prata", "plate": "ABC1D23"},
+    ).json()
+
+    deletion = client.delete(f'/api/vehicles/{vehicle["id"]}', headers=owner)
+
+    assert deletion.status_code == 204
+    assert client.get("/api/vehicles", headers=owner).json() == []
+
+
+def test_vehicle_linked_to_a_ride_cannot_be_deleted():
+    owner = register("linked-vehicle@test.com")
+    vehicle = client.post(
+        "/api/vehicles",
+        headers=owner,
+        json={"model": "Gol", "color": "Prata", "plate": "ABC1D23"},
+    ).json()
+    client.post(
+        "/api/rides",
+        headers=owner,
+        json={
+            "vehicle_id": vehicle["id"],
+            "origin": "Centro",
+            "destination": "UNIFAL",
+            "ride_date": str(date.today() + timedelta(days=1)),
+            "ride_time": "18:30",
+            "seats": 1,
+        },
+    )
+
+    deletion = client.delete(f'/api/vehicles/{vehicle["id"]}', headers=owner)
+
+    assert deletion.status_code == 409
+    assert client.get("/api/vehicles", headers=owner).json()[0]["can_delete"] is False
+
+
 def test_passenger_can_cancel_an_accepted_booking_and_restore_the_seat():
     driver = register("driver@test.com")
     passenger = register("passenger@test.com")
