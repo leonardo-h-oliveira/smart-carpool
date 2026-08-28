@@ -312,6 +312,63 @@ h3 {
   gap:0 18px;
   max-width:760px
 }
+.vehicle-picker {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:10px;
+  margin:-3px 0 22px
+}
+.vehicle-option {
+  display:grid;
+  grid-template-columns:38px 1fr auto;
+  gap:11px;
+  align-items:center;
+  min-height:72px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fafbf8;
+  color:var(--ink);
+  text-align:left;
+  cursor:pointer
+}
+.vehicle-option:hover,.vehicle-option.active {
+  border-color:var(--green);
+  background:#edf3ed
+}
+.vehicle-option strong,.vehicle-option small {
+  display:block
+}
+.vehicle-option small {
+  margin-top:3px;
+  color:var(--muted)
+}
+.vehicle-icon {
+  display:grid;
+  place-items:center;
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  background:white;
+  color:var(--green);
+  font-size:19px;
+  font-weight:800
+}
+.vehicle-check {
+  visibility:hidden;
+  color:var(--green);
+  font-weight:800
+}
+.vehicle-option.active .vehicle-check {
+  visibility:visible
+}
+.vehicle-option.new {
+  border-style:dashed;
+  color:var(--green)
+}
+.vehicle-list-title {
+  margin-top:32px
+}
 .full {
   grid-column:1/-1
 }

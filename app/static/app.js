@@ -3,6 +3,8 @@ const $$ = (selector) => document.querySelectorAll(selector);
 
 let token = localStorage.getItem("sc_token");
 let user = null;
+let returnToOfferAfterVehicle = false;
+let pendingVehicleId = null;
 
 try {
   user = JSON.parse(localStorage.getItem("sc_user") || "null");
@@ -100,7 +102,7 @@ function show(view) {
     search: "Buscar carona",
     offer: "Oferecer carona",
     trips: "Minhas viagens",
-    vehicle: "Meu veículo",
+    vehicle: "Meus veículos",
     profile: "Meu perfil",
   };
   $("#title").textContent = names[view] || "Smart Carpool";
@@ -158,6 +160,22 @@ async function loadFeatured() {
   }
 }
 
+function selectVehicle(vehicleId) {
+  const selectedId = String(vehicleId);
+  $("#vehicle-select").value = selectedId;
+  $$("#offer-vehicle-list [data-vehicle-id]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.vehicleId === selectedId);
+    button.setAttribute("aria-pressed", button.dataset.vehicleId === selectedId);
+  });
+}
+
+function startVehicleRegistration() {
+  returnToOfferAfterVehicle = true;
+  show("vehicle");
+  notice("Cadastre o veículo. Depois você voltará para concluir a carona.");
+  $("#vehicle-form input[name='model']").focus();
+}
+
 async function loadVehicles() {
   try {
     const vehicles = await api("/vehicles");
@@ -168,14 +186,61 @@ async function loadVehicles() {
             `<article class="ride"><h4>${esc(vehicle.model)}</h4><p>${esc(vehicle.color)} · ${esc(vehicle.plate)}</p></article>`,
         )
         .join("") || '<div class="empty">Cadastre um veículo para oferecer caronas.</div>';
-    $("#vehicle-select").innerHTML = vehicles.length
-      ? vehicles
-          .map(
-            (vehicle) =>
-              `<option value="${vehicle.id}">${esc(vehicle.model)} · ${esc(vehicle.plate)}</option>`,
-          )
-          .join("")
-      : '<option value="">Cadastre um veículo primeiro</option>';
+    const select = $("#vehicle-select");
+    const previousVehicleId = pendingVehicleId
+      ? String(pendingVehicleId)
+      : select.value;
+    const vehicleOptions = vehicles
+      .map(
+        (vehicle) =>
+          `<option value="${vehicle.id}">${esc(vehicle.model)} · ${esc(vehicle.plate)}</option>`,
+      )
+      .join("");
+    const emptyOption = vehicles.length
+      ? ""
+      : '<option value="" selected disabled>Você ainda não tem veículo</option>';
+    select.innerHTML = `${emptyOption}${vehicleOptions}<option value="new">＋ Cadastrar novo veículo</option>`;
+
+    $("#offer-vehicle-list").innerHTML = `${vehicles
+      .map(
+        (vehicle) => `<button type="button" class="vehicle-option" data-vehicle-id="${vehicle.id}" aria-pressed="false">
+          <span class="vehicle-icon" aria-hidden="true">🚗</span>
+          <span><strong>${esc(vehicle.model)}</strong><small>${esc(vehicle.color)} · ${esc(vehicle.plate)}</small></span>
+          <span class="vehicle-check" aria-hidden="true">✓</span>
+        </button>`,
+      )
+      .join("")}<button type="button" class="vehicle-option new" data-add-vehicle>
+        <span class="vehicle-icon" aria-hidden="true">＋</span>
+        <span><strong>Novo veículo</strong><small>Cadastrar outro veículo</small></span>
+      </button>`;
+
+    $$("#offer-vehicle-list [data-vehicle-id]").forEach((button) => {
+      button.onclick = () => selectVehicle(button.dataset.vehicleId);
+    });
+    $("#offer-vehicle-list [data-add-vehicle]").onclick = startVehicleRegistration;
+    select.onchange = () => {
+      if (select.value === "new") {
+        startVehicleRegistration();
+        return;
+      }
+      selectVehicle(select.value);
+    };
+
+    const selectedVehicle = vehicles.find(
+      (vehicle) => String(vehicle.id) === previousVehicleId,
+    );
+    if (selectedVehicle) {
+      selectVehicle(selectedVehicle.id);
+    } else if (vehicles.length) {
+      selectVehicle(vehicles[0].id);
+    }
+    pendingVehicleId = null;
+
+    const publishButton = $("#publish-ride");
+    publishButton.disabled = vehicles.length === 0;
+    publishButton.textContent = vehicles.length
+      ? "Publicar carona"
+      : "Cadastre um veículo para continuar";
   } catch (error) {
     notice(error.message, true);
   }
@@ -324,10 +389,20 @@ $("#vehicle-form").onsubmit = async (event) => {
   event.preventDefault();
   try {
     const data = Object.fromEntries(new FormData(event.target));
-    await api("/vehicles", { method: "POST", body: JSON.stringify(data) });
+    const vehicle = await api("/vehicles", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
     event.target.reset();
-    notice("Veículo cadastrado.");
-    loadVehicles();
+    if (returnToOfferAfterVehicle) {
+      returnToOfferAfterVehicle = false;
+      pendingVehicleId = vehicle.id;
+      show("offer");
+      notice("Veículo cadastrado e selecionado. Agora conclua a carona.");
+    } else {
+      notice("Veículo cadastrado.");
+      loadVehicles();
+    }
   } catch (error) {
     notice(error.message, true);
   }
@@ -336,6 +411,11 @@ $("#vehicle-form").onsubmit = async (event) => {
 $("#ride-form").onsubmit = async (event) => {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(event.target));
+  if (!data.vehicle_id || data.vehicle_id === "new") {
+    notice("Cadastre ou escolha um veículo antes de publicar a carona.", true);
+    startVehicleRegistration();
+    return;
+  }
   data.vehicle_id = Number(data.vehicle_id);
   data.seats = Number(data.seats);
   try {
@@ -366,13 +446,20 @@ $("#show-login").onclick = () => {
 };
 
 $$('[data-view]').forEach((button) => {
-  button.onclick = () => show(button.dataset.view);
+  button.onclick = () => {
+    returnToOfferAfterVehicle = false;
+    show(button.dataset.view);
+  };
 });
 $$('[data-go]').forEach((button) => {
-  button.onclick = () => show(button.dataset.go);
+  button.onclick = () => {
+    returnToOfferAfterVehicle = false;
+    show(button.dataset.go);
+  };
 });
 $(".brand").onclick = (event) => {
   event.preventDefault();
+  returnToOfferAfterVehicle = false;
   show("home");
 };
 $("#menu").onclick = () => $(".sidebar").classList.toggle("open");

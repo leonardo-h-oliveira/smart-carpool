@@ -83,6 +83,26 @@ def test_private_routes_require_authentication():
     assert client.get("/api/vehicles").status_code == 401
 
 
+def test_users_only_list_their_own_vehicles():
+    first_user = register("first@test.com")
+    second_user = register("second@test.com")
+    client.post(
+        "/api/vehicles",
+        headers=first_user,
+        json={"model": "Gol", "color": "Prata", "plate": "ABC1D23"},
+    )
+    client.post(
+        "/api/vehicles",
+        headers=second_user,
+        json={"model": "Onix", "color": "Preto", "plate": "DEF4G56"},
+    )
+
+    first_user_vehicles = client.get("/api/vehicles", headers=first_user)
+
+    assert first_user_vehicles.status_code == 200
+    assert [vehicle["plate"] for vehicle in first_user_vehicles.json()] == ["ABC1D23"]
+
+
 def test_passenger_can_cancel_an_accepted_booking_and_restore_the_seat():
     driver = register("driver@test.com")
     passenger = register("passenger@test.com")
