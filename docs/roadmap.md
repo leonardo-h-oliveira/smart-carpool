@@ -14,8 +14,9 @@ O roadmap existe para mostrar evolucao real no portfolio. As datas podem mudar; 
 
 ## v0.2 - Experiencia completa
 
-- [ ] Editar e cancelar carona oferecida
-- [ ] Passageiro cancelar solicitacao pela interface
+- [ ] Editar carona oferecida
+- [x] Cancelar carona oferecida e encerrar solicitacoes vinculadas
+- [x] Passageiro cancelar solicitacao pela interface
 - [ ] Estados de carregamento e confirmacao
 - [ ] Validacao e mensagens de formulario mais claras
 - [ ] Revisao de acessibilidade e navegacao por teclado
@@ -23,9 +24,9 @@ O roadmap existe para mostrar evolucao real no portfolio. As datas podem mudar; 
 
 ## v0.3 - Pronto para demonstracao online
 
-- [ ] PostgreSQL e migracoes de banco
-- [ ] Configuracao por ambiente
-- [ ] Conteinerizacao
-- [ ] Pipeline de testes no GitHub Actions
+- [x] PostgreSQL e migracoes de banco
+- [x] Configuracao por ambiente
+- [x] Conteinerizacao
+- [x] Pipeline de testes no GitHub Actions
 - [ ] Deploy demonstrativo com dados ficticios
 - [ ] Monitoramento basico e documentacao de operacao

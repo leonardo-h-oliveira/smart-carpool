@@ -20,10 +20,10 @@
     </aside>
     <main>
       <header><button id="menu">☰</button><div><small>CARONAS UNIVERSITÁRIAS</small><h1 id="title">Olá 👋</h1></div><div class="avatar" id="avatar">?</div></header>
-      <div id="notice"></div>
+      <div id="notice" aria-live="polite"></div>
       <section id="auth" class="view auth-grid">
         <div class="hero"><span class="eyebrow">VÁ JUNTO. GASTE MENOS.</span><h2>Seu trajeto fica melhor quando é compartilhado.</h2><p>Encontre estudantes com rotas parecidas, divida custos e chegue à universidade com mais previsibilidade.</p><div class="route-art"><i>●</i><b></b><i>●</i></div></div>
-        <form id="login-form" class="card"><h2>Entrar</h2><p>Acesse sua conta para continuar.</p><label>E-mail<input name="email" type="email" value="passageiro@unifal.br" required></label><label>Senha<input name="password" type="password" value="123456" required></label><button class="primary">Entrar</button><button type="button" class="link" id="show-register">Criar minha conta</button><small>Demo: passageiro@unifal.br / 123456</small></form>
+        <form id="login-form" class="card"><h2>Entrar</h2><p>Acesse sua conta para continuar.</p><label>E-mail<input name="email" type="email" value="passageiro@unifal.br" required></label><label>Senha<input name="password" type="password" value="123456" required></label><button class="primary">Entrar</button><button type="button" class="link" id="show-register">Criar minha conta</button><small>Passageiro: passageiro@unifal.br / 123456<br>Motorista: motorista@unifal.br / 123456</small></form>
         <form id="register-form" class="card hidden"><h2>Criar conta</h2><label>Nome<input name="name" required></label><label>E-mail institucional<input name="email" type="email" required></label><label>Telefone<input name="phone"></label><label>Senha<input name="password" type="password" minlength="6" required></label><button class="primary">Cadastrar</button><button type="button" class="link" id="show-login">Já tenho uma conta</button></form>
       </section>
       <section id="home" class="view hidden"><div class="welcome"><div><span class="eyebrow">SMART CARPOOL</span><h2>Para onde vamos hoje?</h2><p>Compartilhe o caminho, não o custo inteiro.</p></div><div class="quick"><button data-go="search">Quero uma carona <b>→</b></button><button data-go="offer">Vou oferecer <b>＋</b></button></div></div><h3>Próximas caronas</h3><div id="featured" class="cards"></div></section>

@@ -17,6 +17,8 @@ Estudantes que percorrem trajetos semelhantes nem sempre conseguem encontrar car
 - Aceite ou recusa pelo motorista
 - Controle transacional de vagas disponíveis
 - Painel de viagens oferecidas, solicitadas e pedidos recebidos
+- Cancelamento de solicitações com devolução automática da vaga
+- Cancelamento de caronas e encerramento das solicitações vinculadas
 - Privacidade de telefone e placa antes do aceite
 - Interface web responsiva e documentação interativa da API
 
@@ -24,6 +26,8 @@ Estudantes que percorrem trajetos semelhantes nem sempre conseguem encontrar car
 
 - FastAPI e Pydantic
 - SQLAlchemy
+- Alembic para migrações do banco
+- Psycopg 3 para PostgreSQL
 - SQLite no desenvolvimento e compatibilidade com PostgreSQL
 - HTML, CSS e JavaScript sem framework
 - Pytest e HTTPX
@@ -46,6 +50,7 @@ No Windows:
 ```powershell
 .venv\Scripts\Activate.ps1
 pip install -r requirements.txt
+python -m alembic upgrade head
 python -m app.seed
 uvicorn app.main:app --reload
 ```
@@ -55,6 +60,7 @@ No Linux ou macOS:
 ```bash
 source .venv/bin/activate
 pip install -r requirements.txt
+python -m alembic upgrade head
 python -m app.seed
 uvicorn app.main:app --reload
 ```
@@ -72,7 +78,25 @@ Contas de demonstração:
 pytest
 ```
 
-Os testes cobrem o fluxo principal de reserva, autorização do motorista, controle de vagas e privacidade dos dados de contato.
+Os nove testes cobrem autenticação, conexão com o banco, solicitação e aceite,
+autorizações, cancelamentos, controle de vagas e privacidade dos dados de
+contato.
+
+## Configuração para publicação
+
+As variáveis necessárias estão documentadas em `.env.example`. Em produção,
+configure `APP_ENV=production`, uma `SECRET_KEY` longa e a `DATABASE_URL` do
+PostgreSQL. Antes de iniciar uma nova versão, execute:
+
+```bash
+python -m alembic upgrade head
+python -m app.seed
+```
+
+O endpoint `/api/health` confirma que a aplicação consegue consultar o banco.
+O `Dockerfile` executa as migrações, prepara os dados demonstrativos e inicia a
+aplicação usando a porta fornecida pela hospedagem. O GitHub Actions executa os
+testes a cada envio para a branch principal e em pull requests.
 
 ## Arquitetura
 

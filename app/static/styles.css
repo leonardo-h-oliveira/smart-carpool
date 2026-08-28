@@ -445,3 +445,50 @@ h3 {
 .contact span {
   color:var(--ink)
 }
+.ride-actions,.button-row {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  align-items:center;
+  justify-content:flex-end
+}
+.compact {
+  padding:8px 11px;
+  font-size:12px
+}
+.danger {
+  border:1px solid #e3b9b9;
+  background:#fff5f5;
+  color:var(--red);
+  border-radius:8px;
+  font-weight:700;
+  cursor:pointer
+}
+.danger:hover {
+  background:#f7e5e5
+}
+.status {
+  display:inline-flex;
+  margin-top:10px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#edf3ed;
+  color:var(--green);
+  font-size:12px;
+  font-weight:700
+}
+.status-rejected,.status-cancelled {
+  background:#f7e5e5;
+  color:var(--red)
+}
+.status-pending {
+  background:#fff4cf;
+  color:#725b10
+}
+.booking-card {
+  min-width:0
+}
+button:disabled {
+  opacity:.6;
+  cursor:not-allowed
+}

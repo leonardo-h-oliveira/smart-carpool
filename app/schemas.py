@@ -35,3 +35,7 @@ class RideIn(BaseModel):
 
 class BookingStatusIn(BaseModel):
     status: Literal["accepted", "rejected", "cancelled"]
+
+
+class RideStatusIn(BaseModel):
+    status: Literal["cancelled"]

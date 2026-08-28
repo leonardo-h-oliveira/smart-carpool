@@ -69,3 +69,122 @@ def test_closed_booking_cannot_be_reopened():
 
     assert client.patch(f'/api/bookings/{booking["id"]}', headers=driver, json={"status":"rejected"}).status_code == 200
     assert client.patch(f'/api/bookings/{booking["id"]}', headers=driver, json={"status":"accepted"}).status_code == 409
+
+
+def test_health_check_confirms_database_connection():
+    response = client.get("/api/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok", "database": "sqlite"}
+
+
+def test_private_routes_require_authentication():
+    assert client.get("/api/dashboard").status_code == 401
+    assert client.get("/api/vehicles").status_code == 401
+
+
+def test_passenger_can_cancel_an_accepted_booking_and_restore_the_seat():
+    driver = register("driver@test.com")
+    passenger = register("passenger@test.com")
+    vehicle = client.post(
+        "/api/vehicles",
+        headers=driver,
+        json={"model": "Gol", "color": "Prata", "plate": "ABC1D23"},
+    ).json()
+    ride = client.post(
+        "/api/rides",
+        headers=driver,
+        json={
+            "vehicle_id": vehicle["id"],
+            "origin": "Centro",
+            "destination": "UNIFAL",
+            "ride_date": str(date.today() + timedelta(days=1)),
+            "ride_time": "18:30",
+            "seats": 1,
+        },
+    ).json()
+    booking = client.post(
+        f'/api/rides/{ride["id"]}/book', headers=passenger
+    ).json()
+    client.patch(
+        f'/api/bookings/{booking["id"]}',
+        headers=driver,
+        json={"status": "accepted"},
+    )
+
+    cancelled = client.patch(
+        f'/api/bookings/{booking["id"]}',
+        headers=passenger,
+        json={"status": "cancelled"},
+    )
+
+    assert cancelled.status_code == 200
+    assert cancelled.json()["status"] == "cancelled"
+    assert cancelled.json()["seats_available"] == 1
+
+
+def test_driver_can_cancel_a_ride_and_its_active_requests():
+    driver = register("driver@test.com")
+    passenger = register("passenger@test.com")
+    vehicle = client.post(
+        "/api/vehicles",
+        headers=driver,
+        json={"model": "Gol", "color": "Prata", "plate": "ABC1D23"},
+    ).json()
+    ride = client.post(
+        "/api/rides",
+        headers=driver,
+        json={
+            "vehicle_id": vehicle["id"],
+            "origin": "Centro",
+            "destination": "UNIFAL",
+            "ride_date": str(date.today() + timedelta(days=1)),
+            "ride_time": "18:30",
+            "seats": 1,
+        },
+    ).json()
+    client.post(f'/api/rides/{ride["id"]}/book', headers=passenger)
+
+    cancelled = client.patch(
+        f'/api/rides/{ride["id"]}',
+        headers=driver,
+        json={"status": "cancelled"},
+    )
+
+    assert cancelled.status_code == 200
+    assert cancelled.json()["status"] == "cancelled"
+    assert client.get("/api/rides").json() == []
+    passenger_booking = client.get(
+        "/api/dashboard", headers=passenger
+    ).json()["bookings"][0]
+    assert passenger_booking["status"] == "cancelled"
+
+
+def test_passenger_cannot_cancel_a_ride_offered_by_another_user():
+    driver = register("driver@test.com")
+    passenger = register("passenger@test.com")
+    vehicle = client.post(
+        "/api/vehicles",
+        headers=driver,
+        json={"model": "Gol", "color": "Prata", "plate": "ABC1D23"},
+    ).json()
+    ride = client.post(
+        "/api/rides",
+        headers=driver,
+        json={
+            "vehicle_id": vehicle["id"],
+            "origin": "Centro",
+            "destination": "UNIFAL",
+            "ride_date": str(date.today() + timedelta(days=1)),
+            "ride_time": "18:30",
+            "seats": 1,
+        },
+    ).json()
+
+    response = client.patch(
+        f'/api/rides/{ride["id"]}',
+        headers=passenger,
+        json={"status": "cancelled"},
+    )
+
+    assert response.status_code == 403
