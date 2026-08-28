@@ -1,4 +1,4 @@
-from datetime import date, datetime, time
+from datetime import UTC, date, datetime, time
 
 from sqlalchemy import Date, DateTime, ForeignKey, Integer, String, Time, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -14,7 +14,9 @@ class User(Base):
     password_hash: Mapped[str] = mapped_column(String(300))
     university: Mapped[str] = mapped_column(String(120), default="UNIFAL-MG")
     phone: Mapped[str | None] = mapped_column(String(30), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
 
     vehicles: Mapped[list["Vehicle"]] = relationship(back_populates="owner", cascade="all, delete-orphan")
 
@@ -42,7 +44,9 @@ class Ride(Base):
     seats_available: Mapped[int] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(String(20), default="open")
     notes: Mapped[str | None] = mapped_column(String(300), nullable=True)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
 
     driver: Mapped[User] = relationship()
     vehicle: Mapped[Vehicle] = relationship()
@@ -56,7 +60,9 @@ class Booking(Base):
     ride_id: Mapped[int] = mapped_column(ForeignKey("rides.id"))
     passenger_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     status: Mapped[str] = mapped_column(String(20), default="pending")
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(UTC)
+    )
     ride: Mapped[Ride] = relationship(back_populates="bookings")
     passenger: Mapped[User] = relationship()
 
