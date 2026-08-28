@@ -32,6 +32,11 @@ Estudantes que percorrem trajetos semelhantes nem sempre conseguem encontrar car
 
 Requer Python 3.11 ou superior.
 
+Depois de configurar o ambiente, no Windows você também pode abrir o arquivo
+`start-smart-carpool.bat`. Ele inicia o servidor e abre o endereço correto no
+navegador. Não abra `app/static/index.html` diretamente e não use o Live Server,
+pois a interface depende da API do FastAPI.
+
 ```bash
 python -m venv .venv
 ```
