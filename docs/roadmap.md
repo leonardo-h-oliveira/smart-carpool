@@ -1,32 +1,30 @@
 # Roadmap
 
-O roadmap existe para mostrar evolucao real no portfolio. As datas podem mudar; o criterio de conclusao nao.
+O Smart Carpool atingiu o objetivo de demonstrar os principais fluxos de uma plataforma de caronas universitárias. Os itens abaixo separam o que já foi validado das melhorias que ainda podem ser desenvolvidas.
 
-## v0.1 - MVP demonstravel
+## Entregas concluídas
 
-- [x] Cadastro e login
-- [x] Cadastro de veiculo
+- [x] Cadastro, autenticação e edição de perfil
+- [x] Cadastro, seleção, edição e exclusão segura de veículos
 - [x] Oferta e busca de caronas
-- [x] Solicitacao, aceite e recusa de vaga
+- [x] Solicitação, aceite e recusa de vaga
+- [x] Cancelamento de solicitação com devolução da vaga
+- [x] Cancelamento de carona e encerramento das solicitações vinculadas
 - [x] Controle de disponibilidade
-- [x] Dados de contato liberados apenas apos o aceite
-- [x] Testes do fluxo principal
+- [x] Telefone e placa protegidos antes do aceite
+- [x] PostgreSQL e migrações de banco
+- [x] Configuração por ambiente e conteinerização
+- [x] Testes automatizados no GitHub Actions
+- [x] Demonstração publicada com dados fictícios
+- [x] Validação manual dos fluxos com diferentes usuários
 
-## v0.2 - Experiencia completa
+## Melhorias opcionais
 
-- [ ] Editar carona oferecida
-- [x] Cancelar carona oferecida e encerrar solicitacoes vinculadas
-- [x] Passageiro cancelar solicitacao pela interface
-- [ ] Estados de carregamento e confirmacao
-- [ ] Validacao e mensagens de formulario mais claras
-- [ ] Revisao de acessibilidade e navegacao por teclado
-- [ ] Capturas de tela e GIF curto para o README
+Estas melhorias não impedem a demonstração do projeto atual.
 
-## v0.3 - Pronto para demonstracao online
-
-- [x] PostgreSQL e migracoes de banco
-- [x] Configuracao por ambiente
-- [x] Conteinerizacao
-- [x] Pipeline de testes no GitHub Actions
-- [ ] Deploy demonstrativo com dados ficticios
-- [ ] Monitoramento basico e documentacao de operacao
+- [ ] Permitir edição de uma carona já publicada
+- [ ] Aprimorar estados de carregamento e confirmação
+- [ ] Tornar mensagens de validação mais específicas
+- [ ] Revisar acessibilidade e navegação por teclado
+- [ ] Adicionar capturas de tela ao README
+- [ ] Documentar monitoramento e rotina de operação

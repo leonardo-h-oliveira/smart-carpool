@@ -1,46 +1,60 @@
 # Smart Carpool
 
-Plataforma web de caronas universitárias inspirada no **UniCar**, protótipo desenvolvido como Trabalho de Conclusão de Curso na UNIFAL-MG. O projeto transforma a validação acadêmica feita no MIT App Inventor e Firebase em uma aplicação web com API, banco relacional, regras de negócio e testes automatizados.
+Aplicação web para organizar caronas universitárias, desde a publicação do trajeto até a confirmação da vaga entre motorista e passageiro.
 
-> Status: `v0.1 - MVP demonstrável`. Projeto de portfólio em evolução; não é um serviço em produção.
+[Acessar demonstração](https://smart-carpool-7ltw.onrender.com)
 
-## O problema
+> A demonstração utiliza hospedagem gratuita. Após um período sem acessos, a primeira abertura pode levar cerca de um minuto enquanto o serviço é iniciado.
 
-Estudantes que percorrem trajetos semelhantes nem sempre conseguem encontrar caronas de forma organizada e segura. O Smart Carpool centraliza a oferta, a busca e a confirmação de vagas, preservando os dados de contato até que o motorista aceite a solicitação.
+## Situação do projeto
 
-## O que o MVP entrega
+O MVP está funcional, publicado e validado com diferentes usuários. Ele foi desenvolvido a partir do UniCar, protótipo criado como Trabalho de Conclusão de Curso na UNIFAL-MG.
 
-- Cadastro e autenticação de usuários
-- Consulta e alteração dos dados cadastrais
-- Cadastro, seleção, edição e exclusão segura dos veículos de cada motorista
+As contas e os dados da demonstração são fictícios. O sistema comprova os fluxos e as regras implementadas, mas não é oferecido como serviço para uso cotidiano.
+
+## Funcionalidades
+
+- Cadastro, autenticação e edição de perfil
+- Cadastro, seleção, edição e exclusão de veículos
 - Publicação e busca de caronas
 - Solicitação de vaga pelo passageiro
 - Aceite ou recusa pelo motorista
-- Controle transacional de vagas disponíveis
-- Painel de viagens oferecidas, solicitadas e pedidos recebidos
-- Cancelamento de solicitações com devolução automática da vaga
-- Cancelamento de caronas e encerramento das solicitações vinculadas
-- Privacidade de telefone e placa antes do aceite
-- Interface web responsiva e documentação interativa da API
+- Cancelamento de solicitações e caronas
+- Atualização segura da quantidade de vagas disponíveis
+- Painéis de viagens oferecidas, solicitadas e pedidos recebidos
+- Proteção do telefone e da placa antes da confirmação da vaga
+- Documentação interativa da API
 
-## Tecnologias
+## Regras e validação
 
-- FastAPI e Pydantic
-- SQLAlchemy
-- Alembic para migrações do banco
-- Psycopg 3 para PostgreSQL
-- SQLite no desenvolvimento e compatibilidade com PostgreSQL
-- HTML, CSS e JavaScript sem framework
-- Pytest e HTTPX
+O sistema impede operações que deixariam os dados inconsistentes, como excluir veículos vinculados indevidamente, ultrapassar a quantidade de vagas ou alterar solicitações de outro usuário.
+
+Foram executados testes manuais com diferentes contas para conferir negociação de vagas, privacidade da placa, edição de perfil, regras de exclusão de veículos e controle de disponibilidade. Além disso, 18 testes automatizados cobrem autenticação, autorizações, banco de dados, veículos, solicitações, cancelamentos e privacidade dos dados.
+
+```bash
+pytest
+```
+
+## Estrutura técnica
+
+- FastAPI, Pydantic e SQLAlchemy
+- PostgreSQL no ambiente publicado e SQLite no desenvolvimento local
+- Alembic para migrações
+- HTML, CSS e JavaScript na interface
+- Pytest e HTTPX nos testes
+- GitHub Actions para executar a suíte de testes
+
+```mermaid
+flowchart LR
+    UI[Interface web] --> API[API FastAPI]
+    API --> AUTH[Autenticação]
+    API --> ORM[SQLAlchemy]
+    ORM --> DB[(SQLite ou PostgreSQL)]
+```
 
 ## Executar localmente
 
 Requer Python 3.11 ou superior.
-
-Depois de configurar o ambiente, no Windows você também pode abrir o arquivo
-`start-smart-carpool.bat`. Ele inicia o servidor e abre o endereço correto no
-navegador. Não abra `app/static/index.html` diretamente e não use o Live Server,
-pois a interface depende da API do FastAPI.
 
 ```bash
 python -m venv .venv
@@ -66,68 +80,23 @@ python -m app.seed
 uvicorn app.main:app --reload
 ```
 
-Acesse `http://127.0.0.1:8000`. A documentação da API fica em `http://127.0.0.1:8000/docs`.
+A aplicação fica disponível em `http://127.0.0.1:8000` e a documentação da API em `http://127.0.0.1:8000/docs`.
 
 Contas de demonstração:
 
 - `motorista@unifal.br` / `123456`
 - `passageiro@unifal.br` / `123456`
 
-## Testes
+No Windows, o arquivo `start-smart-carpool.bat` também prepara o acesso local. A interface depende da API e não deve ser aberta diretamente pelo arquivo `app/static/index.html`.
 
-```bash
-pytest
-```
+## Documentação
 
-Os dezoito testes cobrem autenticação, atualização de perfil, validações,
-gerenciamento e isolamento dos veículos, conexão com o banco, entrega atualizada
-da interface, solicitação e aceite, autorizações, cancelamentos, controle de
-vagas e privacidade dos dados de contato.
+- [`docs/architecture.md`](docs/architecture.md): entidades e regras de vagas
+- [`docs/screens.md`](docs/screens.md): evolução das telas desde o UniCar
+- [`docs/roadmap.md`](docs/roadmap.md): entregas concluídas e melhorias opcionais
 
-## Configuração para publicação
+## Origem
 
-As variáveis necessárias estão documentadas em `.env.example`. Em produção,
-configure `APP_ENV=production`, uma `SECRET_KEY` longa e a `DATABASE_URL` do
-PostgreSQL. Antes de iniciar uma nova versão, execute:
+Desenvolvido por Leonardo Henrique Oliveira a partir do TCC **UniCar: um aplicativo de caronas compartilhadas para a Universidade Federal de Alfenas**, realizado com Bruna Helena Antonialli Gomes, sob orientação do Prof. Dr. Luiz Felipe Ramos Turci.
 
-```bash
-python -m alembic upgrade head
-python -m app.seed
-```
-
-O endpoint `/api/health` confirma que a aplicação consegue consultar o banco.
-O `Dockerfile` executa as migrações, prepara os dados demonstrativos e inicia a
-aplicação usando a porta fornecida pela hospedagem. O GitHub Actions executa os
-testes a cada envio para a branch principal e em pull requests.
-
-## Arquitetura
-
-```mermaid
-flowchart LR
-    UI[Interface web responsiva] --> API[FastAPI]
-    API --> AUTH[Autenticação assinada]
-    API --> ORM[SQLAlchemy]
-    ORM --> DB[(SQLite ou PostgreSQL)]
-```
-
-Veja também:
-
-- [`docs/architecture.md`](docs/architecture.md) - entidades e regra crítica de vagas
-- [`docs/screens.md`](docs/screens.md) - evolução das telas do UniCar
-- [`docs/roadmap.md`](docs/roadmap.md) - próximas entregas planejadas
-
-## Evolução do projeto
-
-Este repositório registra a passagem de um protótipo acadêmico para um produto de portfólio. Cada versão deve ter um objetivo verificável:
-
-- `v0.1`: MVP funcional, documentado e testado
-- `v0.2`: edição e cancelamento de caronas, estados de interface e acessibilidade
-- `v0.3`: PostgreSQL, migrações, conteinerização e publicação de uma demonstração
-
-## Autores e origem
-
-Projeto de portfólio de Leonardo Henrique Oliveira, baseado no TCC **UniCar: um aplicativo de caronas compartilhadas para a Universidade Federal de Alfenas**, desenvolvido com Bruna Helena Antonialli Gomes, sob orientação do Prof. Dr. Luiz Felipe Ramos Turci.
-
-## Aviso
-
-As contas e os dados do ambiente de demonstração são fictícios. Antes de uso real, o projeto ainda precisa de revisão de segurança, política de privacidade, moderação e infraestrutura de produção.
+Antes de qualquer uso real, seriam necessárias revisões adicionais de segurança, privacidade, moderação e operação.
