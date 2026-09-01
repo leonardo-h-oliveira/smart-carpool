@@ -94,6 +94,7 @@ On Windows, `start-smart-carpool.bat` also prepares the local application. The i
 - [`docs/architecture.md`](docs/architecture.md): main entities and seat availability rules
 - [`docs/screens.md`](docs/screens.md): interface evolution from UniCar
 - [`docs/roadmap.md`](docs/roadmap.md): completed work and optional improvements
+- [`docs/development-history.md`](docs/development-history.md): chronological development phases and links to all original commits
 
 ## Background
 
