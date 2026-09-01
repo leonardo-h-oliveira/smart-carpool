@@ -1,30 +1,30 @@
 # Roadmap
 
-O Smart Carpool atingiu o objetivo de demonstrar os principais fluxos de uma plataforma de caronas universitárias. Os itens abaixo separam o que já foi validado das melhorias que ainda podem ser desenvolvidas.
+Smart Carpool meets its goal of demonstrating the main workflows of a university carpooling platform. The items below separate validated work from optional improvements.
 
-## Entregas concluídas
+## Completed
 
-- [x] Cadastro, autenticação e edição de perfil
-- [x] Cadastro, seleção, edição e exclusão segura de veículos
-- [x] Oferta e busca de caronas
-- [x] Solicitação, aceite e recusa de vaga
-- [x] Cancelamento de solicitação com devolução da vaga
-- [x] Cancelamento de carona e encerramento das solicitações vinculadas
-- [x] Controle de disponibilidade
-- [x] Telefone e placa protegidos antes do aceite
-- [x] PostgreSQL e migrações de banco
-- [x] Configuração por ambiente e conteinerização
-- [x] Testes automatizados no GitHub Actions
-- [x] Demonstração publicada com dados fictícios
-- [x] Validação manual dos fluxos com diferentes usuários
+- [x] Account registration, authentication and profile editing
+- [x] Vehicle registration, selection, editing and safe deletion
+- [x] Ride publishing and search
+- [x] Booking request, approval and rejection
+- [x] Booking cancellation with seat restoration
+- [x] Ride cancellation and closure of linked requests
+- [x] Seat availability control
+- [x] Phone number and license plate protection before approval
+- [x] PostgreSQL database and migrations
+- [x] Environment-based configuration and container setup
+- [x] Automated tests in GitHub Actions
+- [x] Published demo with fictitious records
+- [x] Manual workflow validation with different users
 
-## Melhorias opcionais
+## Optional improvements
 
-Estas melhorias não impedem a demonstração do projeto atual.
+These items do not block the current project demonstration.
 
-- [ ] Permitir edição de uma carona já publicada
-- [ ] Aprimorar estados de carregamento e confirmação
-- [ ] Tornar mensagens de validação mais específicas
-- [ ] Revisar acessibilidade e navegação por teclado
-- [ ] Adicionar capturas de tela ao README
-- [ ] Documentar monitoramento e rotina de operação
+- [ ] Allow drivers to edit a published ride
+- [ ] Improve loading and confirmation states
+- [ ] Make validation messages more specific
+- [ ] Review accessibility and keyboard navigation
+- [ ] Add screenshots to the main README
+- [ ] Document monitoring and operating procedures

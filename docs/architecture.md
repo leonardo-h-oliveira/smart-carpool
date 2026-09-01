@@ -1,21 +1,20 @@
-# Arquitetura
+# Architecture
 
 ```mermaid
 flowchart TD
-    UI[Web responsiva] --> API[FastAPI]
-    API --> AUTH[Autenticação assinada]
+    UI[Responsive web interface] --> API[FastAPI application]
+    API --> AUTH[Signed authentication]
     API --> ORM[SQLAlchemy]
-    ORM --> DB[(SQLite / PostgreSQL)]
+    ORM --> DB[(SQLite or PostgreSQL)]
 ```
 
-## Entidades
+## Main entities
 
-- User: identidade única; pode dirigir ou viajar.
-- Vehicle: pertence a um usuário.
-- Ride: trajeto oferecido por motorista e veículo.
-- Booking: solicitação de passageiro com status.
+- **User:** a single identity that can offer or request rides
+- **Vehicle:** belongs to a user and can be linked to offered rides
+- **Ride:** a route offered by a driver using one vehicle
+- **Booking:** a passenger request with a controlled status
 
-## Regra crítica de vagas
+## Seat availability rule
 
-A vaga só é consumida quando o motorista aceita a solicitação. A API bloqueia a reserva para decisão, confere a disponibilidade novamente e impede vagas negativas. Recusa ou cancelamento de uma reserva aceita devolve a vaga.
-
+A seat is consumed only when the driver accepts a booking request. The API locks the selected booking for the decision, checks availability again and prevents the number of available seats from becoming negative. Rejecting or cancelling an accepted booking returns the seat to the ride.

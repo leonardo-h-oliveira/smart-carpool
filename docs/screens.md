@@ -1,29 +1,28 @@
-# Telas: do UniCar ao Smart Carpool
+# Screens: from UniCar to Smart Carpool
 
-## 1. Screen1 — acesso e cadastro
+## 1. Screen1 — access and registration
 
-No protótipo antigo concentrava inicialização, TinyDB, autenticação Firebase, `localId` e cadastro de usuário/veículo. Na nova versão foi separada em login, criação de conta, perfil e veículo para reduzir complexidade.
+The original prototype combined initialization, TinyDB, Firebase authentication, `localId` and user/vehicle registration. Smart Carpool separates this work into login, account creation, profile and vehicle screens.
 
-## 2. Screen4 — menu principal
+## 2. Screen4 — main menu
 
-Era o ponto de decisão entre oferecer e solicitar carona. Agora é o dashboard inicial, com os dois atalhos e caronas próximas.
+This was the decision point between offering and requesting a ride. It became the main dashboard, with shortcuts for both actions and a list of upcoming rides.
 
-## 3. Screen3 — oferta
+## 3. Screen3 — publishing a ride
 
-Motorista escolhe veículo, origem, destino, data, horário, vagas e observações. A oferta passa a ter estado (`open`, `completed` ou `cancelled`) e controle explícito de vagas.
+The driver selects a vehicle, origin, destination, date, time, number of seats and optional notes. Each ride has an explicit state (`open`, `completed` or `cancelled`) and controlled seat availability.
 
-## 4. Screen2 — solicitação
+## 4. Screen2 — requesting a ride
 
-Passageiro pesquisa caronas por origem, destino e data, abre os detalhes e solicita uma vaga. A solicitação nasce como `pending`.
+The passenger searches by origin, destination and date, opens a ride and submits a booking request. A new request starts with the `pending` status.
 
-## 5. Screen5 — embarque e contato
+## 5. Screen5 — boarding and contact
 
-No protótipo reunia embarque e contato por WhatsApp. Na nova experiência corresponde a **Minhas viagens**, onde motorista aceita/recusa pedidos e passageiro acompanha o status. O contato só deve ser liberado após o aceite.
+The prototype combined boarding details and WhatsApp contact. Smart Carpool represents this work in **My trips**, where drivers approve or reject requests and passengers follow their status. Contact information is released only after approval.
 
-## Telas complementares da nova versão
+## Additional screens in the web version
 
-- Meu veículo
-- Perfil
-- Minhas viagens
-- Estado vazio, carregamento, sucesso e erro em cada jornada
-
+- Vehicles
+- Profile
+- My trips
+- Empty, loading, success and error states for each workflow

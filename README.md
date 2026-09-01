@@ -1,66 +1,66 @@
 # Smart Carpool
 
-Aplicação web para organizar caronas universitárias, desde a publicação do trajeto até a confirmação da vaga entre motorista e passageiro.
+A web application for managing university carpools, from publishing a route to confirming a booking between a driver and a passenger.
 
-[Acessar demonstração](https://smart-carpool-7ltw.onrender.com)
+[Open the live demo](https://smart-carpool-7ltw.onrender.com)
 
-> A demonstração utiliza hospedagem gratuita. Após um período sem acessos, a primeira abertura pode levar cerca de um minuto enquanto o serviço é iniciado.
+> The demo uses a free hosting plan. Its first request after a period of inactivity may take about one minute while the service starts.
 
-## Situação do projeto
+## Project status
 
-O MVP está funcional, publicado e validado com diferentes usuários. Ele foi desenvolvido a partir do UniCar, protótipo criado como Trabalho de Conclusão de Curso na UNIFAL-MG.
+The MVP is functional, published and validated with different users. It was developed from UniCar, a mobile prototype created as a final undergraduate project at UNIFAL-MG.
 
-As contas e os dados da demonstração são fictícios. O sistema comprova os fluxos e as regras implementadas, mas não é oferecido como serviço para uso cotidiano.
+The demo accounts and records are fictitious. The application demonstrates the implemented workflows and business rules, but it is not offered as a service for everyday use.
 
-## Funcionalidades
+## Features
 
-- Cadastro, autenticação e edição de perfil
-- Cadastro, seleção, edição e exclusão de veículos
-- Publicação e busca de caronas
-- Solicitação de vaga pelo passageiro
-- Aceite ou recusa pelo motorista
-- Cancelamento de solicitações e caronas
-- Atualização segura da quantidade de vagas disponíveis
-- Painéis de viagens oferecidas, solicitadas e pedidos recebidos
-- Proteção do telefone e da placa antes da confirmação da vaga
-- Documentação interativa da API
+- Account registration, authentication and profile editing
+- Vehicle registration, selection, editing and safe deletion
+- Ride publishing and search
+- Booking requests from passengers
+- Request approval or rejection by drivers
+- Booking and ride cancellation
+- Transaction-safe seat availability updates
+- Dashboards for offered rides, requested rides and incoming requests
+- Phone number and license plate protection before booking approval
+- Interactive API documentation
 
-## Regras e validação
+## Business rules and validation
 
-O sistema impede operações que deixariam os dados inconsistentes, como excluir veículos vinculados indevidamente, ultrapassar a quantidade de vagas ou alterar solicitações de outro usuário.
+The application blocks operations that would leave its data inconsistent. Examples include deleting a vehicle linked to an active ride, accepting more passengers than the available capacity or modifying another user's request.
 
-Foram executados testes manuais com diferentes contas para conferir negociação de vagas, privacidade da placa, edição de perfil, regras de exclusão de veículos e controle de disponibilidade. Além disso, 18 testes automatizados cobrem autenticação, autorizações, banco de dados, veículos, solicitações, cancelamentos e privacidade dos dados.
+Manual tests with different accounts covered the booking negotiation, license plate privacy, profile editing, vehicle deletion rules and seat availability. In addition, 18 automated tests cover authentication, authorization, database behavior, vehicles, bookings, cancellations and data privacy.
 
 ```bash
 pytest
 ```
 
-## Estrutura técnica
+## Technical overview
 
-- FastAPI, Pydantic e SQLAlchemy
-- PostgreSQL no ambiente publicado e SQLite no desenvolvimento local
-- Alembic para migrações
-- HTML, CSS e JavaScript na interface
-- Pytest e HTTPX nos testes
-- GitHub Actions para executar a suíte de testes
+- FastAPI, Pydantic and SQLAlchemy
+- PostgreSQL in the published environment and SQLite for local development
+- Alembic database migrations
+- HTML, CSS and JavaScript interface
+- Pytest and HTTPX test suite
+- GitHub Actions continuous integration
 
 ```mermaid
 flowchart LR
-    UI[Interface web] --> API[API FastAPI]
-    API --> AUTH[Autenticação]
+    UI[Web interface] --> API[FastAPI application]
+    API --> AUTH[Authentication]
     API --> ORM[SQLAlchemy]
-    ORM --> DB[(SQLite ou PostgreSQL)]
+    ORM --> DB[(SQLite or PostgreSQL)]
 ```
 
-## Executar localmente
+## Run locally
 
-Requer Python 3.11 ou superior.
+Python 3.11 or newer is required.
 
 ```bash
 python -m venv .venv
 ```
 
-No Windows:
+On Windows:
 
 ```powershell
 .venv\Scripts\Activate.ps1
@@ -70,7 +70,7 @@ python -m app.seed
 uvicorn app.main:app --reload
 ```
 
-No Linux ou macOS:
+On Linux or macOS:
 
 ```bash
 source .venv/bin/activate
@@ -80,23 +80,23 @@ python -m app.seed
 uvicorn app.main:app --reload
 ```
 
-A aplicação fica disponível em `http://127.0.0.1:8000` e a documentação da API em `http://127.0.0.1:8000/docs`.
+The application is available at `http://127.0.0.1:8000`, and its API documentation at `http://127.0.0.1:8000/docs`.
 
-Contas de demonstração:
+Demo accounts:
 
 - `motorista@unifal.br` / `123456`
 - `passageiro@unifal.br` / `123456`
 
-No Windows, o arquivo `start-smart-carpool.bat` também prepara o acesso local. A interface depende da API e não deve ser aberta diretamente pelo arquivo `app/static/index.html`.
+On Windows, `start-smart-carpool.bat` also prepares the local application. The interface depends on the API and should not be opened directly from `app/static/index.html`.
 
-## Documentação
+## Documentation
 
-- [`docs/architecture.md`](docs/architecture.md): entidades e regras de vagas
-- [`docs/screens.md`](docs/screens.md): evolução das telas desde o UniCar
-- [`docs/roadmap.md`](docs/roadmap.md): entregas concluídas e melhorias opcionais
+- [`docs/architecture.md`](docs/architecture.md): main entities and seat availability rules
+- [`docs/screens.md`](docs/screens.md): interface evolution from UniCar
+- [`docs/roadmap.md`](docs/roadmap.md): completed work and optional improvements
 
-## Origem
+## Background
 
-Desenvolvido por Leonardo Henrique Oliveira a partir do TCC **UniCar: um aplicativo de caronas compartilhadas para a Universidade Federal de Alfenas**, realizado com Bruna Helena Antonialli Gomes, sob orientação do Prof. Dr. Luiz Felipe Ramos Turci.
+Developed by Leonardo Henrique Oliveira from the final undergraduate project **UniCar: a shared carpooling application for the Federal University of Alfenas**, written with Bruna Helena Antonialli Gomes under the supervision of Professor Luiz Felipe Ramos Turci.
 
-Antes de qualquer uso real, seriam necessárias revisões adicionais de segurança, privacidade, moderação e operação.
+Additional security, privacy, moderation and operational reviews would be required before any real-world use.
