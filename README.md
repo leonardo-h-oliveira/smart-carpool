@@ -8,7 +8,7 @@ A web application for managing university carpools, from publishing a route to c
 
 ## Project status
 
-The MVP is functional, published and validated with different users. It was developed from UniCar, a mobile prototype created as a final undergraduate project at UNIFAL-MG.
+The MVP is functional, published and validated with different users. Smart Carpool is an independent web portfolio project. It addresses the same university-mobility problem studied in the academic UniCar prototype, but it has its own codebase, architecture, interface and product scope.
 
 The demo accounts and records are fictitious. The application demonstrates the implemented workflows and business rules, but it is not offered as a service for everyday use.
 
@@ -92,12 +92,12 @@ On Windows, `start-smart-carpool.bat` also prepares the local application. The i
 ## Documentation
 
 - [`docs/architecture.md`](docs/architecture.md): main entities and seat availability rules
-- [`docs/screens.md`](docs/screens.md): interface evolution from UniCar
+- [`docs/project-context.md`](docs/project-context.md): distinction between Smart Carpool and UniCar
 - [`docs/roadmap.md`](docs/roadmap.md): completed work and optional improvements
 - [`docs/development-history.md`](docs/development-history.md): chronological development phases and links to all original commits
 
 ## Background
 
-Developed by Leonardo Henrique Oliveira from the final undergraduate project **UniCar: a shared carpooling application for the Federal University of Alfenas**, written with Bruna Helena Antonialli Gomes under the supervision of Professor Luiz Felipe Ramos Turci.
+Developed by Leonardo Henrique Oliveira as an independent portfolio project. Leonardo also co-authored the undergraduate project **UniCar: a shared carpooling application for the Federal University of Alfenas** with Bruna Helena Antonialli Gomes, under the supervision of Professor Luiz Felipe Ramos Turci. UniCar and Smart Carpool are separate projects.
 
 Additional security, privacy, moderation and operational reviews would be required before any real-world use.
